@@ -4,23 +4,21 @@
   // Script Path
   const SCRIPT_PATH = (() => {
     const scripts = document.getElementsByTagName("script");
-    const current = scripts[scripts.length - 1]; // <-- safe alternative
+    const current = scripts[scripts.length - 1];
     const src = current.src;
     return src.substring(0, src.lastIndexOf('/') + 1);
   })();
 
   // Playlist
   const playlist = [
-    "MOODSWING.mp3",
-    "TheThirdSanctuary.mp3",
-    "HometownReprise.mp3"
+    "phantasmagoria.mp3",
+    "WINTERWATER.mp3"
   ].map(file => SCRIPT_PATH + "media/audio/" + file);
 
   // Titles
   const titles = {
-    "MOODSWING.mp3": "MOODSWING - gronnblade",
-    "TheThirdSanctuary.mp3": "The Third Sanctuary - Toby Fox",
-    "HometownReprise.mp3": "Another day in Hometown - Toby Fox"
+    "phantasmagoria.mp3": "phantasmagoria - VMN",
+    "WINTERWATER.mp3": "WINTERWATER - VMN"
   };
 
   // Shared Index
@@ -107,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Paused Text Updater
   bgmAudio.addEventListener('play', updateText);
   bgmAudio.addEventListener('pause', () => {
-    bgmText.textContent = 'AUDITORY HALT; IT AWAITS YOUR RESUMPTION.';
+    bgmText.textContent = 'Paused.';
   });
   // Auto Next Track
   bgmAudio.addEventListener('ended', () => {
@@ -197,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const userPlayed = sessionStorage.getItem("bgm-user-played") === "true";
 
   // Position Restorer
-  if (left) box.style.left = left;         // <-- fixed: check left, not left&&top  
+  if (left) box.style.left = left;
   if (top) box.style.top = top;
 
   // Track Restorer (Index-Based) — USE GLOBAL INDEX
@@ -223,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Track user interaction (Play Event)
   audio.addEventListener("play", () => {
     sessionStorage.setItem("bgm-user-played", "true");
-    audio.dataset.userPlayed = "true";      // <-- fixed: set dataset so saveState reads it
+    audio.dataset.userPlayed = "true";
   });
 
   // State Saver Function
@@ -241,122 +239,3 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("beforeunload", saveState);
   window.addEventListener("unload", () => clearInterval(interval));
 });
-
-///////////////////////////////////////////////////////
-// 1225 & Hell
-document.addEventListener("DOMContentLoaded", () => {
-  const bgmAudio = document.getElementById("bgm-audio");
-  const bgmText = document.getElementById("bgm-text");
-  const audioLabel = document.querySelector(".bgm > div"); // the container with the "AUDITORY EXPERIENCE" text
-  const logo = document.getElementById("fulllogo");
-  const h12 = 11;
-  const m25 = 24;
-
-  if (!bgmAudio || !bgmText || !audioLabel || !logo) return;
-
-  let in1225 = false;
-  let is1225Mode = false;   // exported state for other code
-  const specialTrack = SCRIPT_PATH + "media/audio/findher.mp3";
-
-  // build hell.html path relative to where script.js lives
-  function openHellRelativeToScript() {
-    const hellPath = SCRIPT_PATH + "forest/hell.html";
-    const logoBox = document.querySelector(".logobox");
-    if (!logoBox) return;
-    const parent = logoBox.parentElement;
-    if (parent && parent.tagName === "A") {
-        parent.href = hellPath;
-    }
-}
-
-
-  // Logo click → secret path only if special track + playing
-  logo.addEventListener("click", () => {
-    if (is1225Mode && !bgmAudio.paused) {
-      openHellRelativeToScript();
-    }
-  }); 
-
-  function enter1225() {
-    in1225 = true;
-    is1225Mode = true;
-
-    // interrupt normal player
-    bgmAudio.pause();
-    bgmAudio.src = specialTrack;
-    bgmAudio.loop = true;        // loop ONLY during 12:25
-    bgmAudio.load();
-    bgmAudio.play().catch(() => {});
-
-    // change UI text
-    function findher() {
-      bgmText.textContent = "find her";
-    }
-    findher();
-    let find = setInterval(findher, 50);
-
-    // Hell
-    let child = document.querySelector(".logobox");
-    let parent = child.parentElement;
-    document.getElementById(parent).setAttribute("href", hellPath);
-    
-  }
-  function exit1225() {
-    in1225 = false;
-    is1225Mode = false;
-
-    // stop loop, finish once, don't skip to next playlist
-    bgmAudio.loop = false;
-
-    // restore normal UI text
-    audioLabel.firstChild.textContent = "AUDITORY EXPERIENCE:";
-  }
-
-  function check1225() {
-    const now = new Date();
-    const hr = now.getHours();
-    const min = now.getMinutes();
-
-    // ENTER
-    if (hr === h12 && min === m25) {
-      if (!in1225) {enter1225()};
-      return;
-    }
-
-    // EXIT
-    if (in1225 && !(hr === h12 && min === m25)) {
-      exit1225();
-    }
-  }
-
-  check1225();
-  setInterval(check1225, 60000);
-});
-
-///////////////////////////////////////////////////////
-// THIS IS                                           //
-// THE WORLDS EDGE.                                  //
-//                                                   //
-// HERE LIES                                         //
-// THE CODE YOU SEEK.                                //
-//                                                   //
-// PROCEED NO FURTHER                                //
-// FOR BEYOND THIS POINT                             //
-// LIES THE A PLACE                                  //
-// MUCH, MUCH DARKER.                                //
-//                                                   //
-// DARKER THAN                                       //
-// DARK.                                             //       
-//                                                   //
-// ENTRY NUMBER                                      //
-// 18                                                //              
-//                                                   //
-// ABANDON ALL HOPE                                  //    
-// YE WHO ENTER HERE.                                // 
-//                                                   //
-// ONE DAY                                           //
-// YOU MAY RETURN                                    //
-// TO FINISH THIS                                    //
-//  PROJECT,                                         //
-// BUT NOT TODAY.                                    //
-///////////////////////////////////////////////////////
